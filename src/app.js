@@ -12,7 +12,7 @@ mongoose.connect(process.env.DB_CONNECT, {
     useNewUrlParser: true, 
     useUnifiedTopology: true
 }).catch(err => {
-    console.error('Failure to connect to MongoDB');
+    console.error('Failure to connect to DB');
 });
 
 

@@ -4,56 +4,47 @@ const User = mongoose.model('users');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const { JWT_KEY } = process.env;
+const { JWT_KEY, JWT_EXPIRES } = process.env;
 
 module.exports = {
-    async store (req, res) {
+    async login (req, res) {
+        if(!JWT_KEY) return res.status(500).json({error : "key jwt not declared"});
+        if(!JWT_EXPIRES) return res.status(500).json({error : "jwt deadline not declared"});
+
+        const auth = req.headers.authorization; ////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (auth && auth.split(' ')[0] === 'Bearer') return res.json({text : "User already authenticate"});///////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         if (!req.body) return res.status(400).json({ error : "Failure to get body"});
-        const { name, email, cpf, password, biography } = req.body;
 
-        let problems = [];
+        const { cpf, password } = req.body;
+        if (!cpf || !password) return res.status(400).json({error : "All the fields must be filled!"});
 
-        if(!name ||name.length < 1) {
-            problems.push({problem : 'invalid name!'});
-        }
-        if(!email ||email.length <= 5) {
-            problems.push({problem : 'invalid email!'});
-        }
-        if(!password ||password.length < 1) {
-            problems.push({problem : 'invalid password!'});
-        }
-        if(!cpf ||cpf.length < 11) {
-            problems.push({problem : 'invalid cpf!'});
-        }
+        const user = await User.findOne({cpf}).select('+password');
+        if(!user) return res.status(400).json({error : "Incorrect cpf or password"});
 
-        if (problems.length != 0) return res.status(400).json(problems);
-
-        const user = await User.findOne();;
-
-        if(user) return res.status(400).json({error : "an account with this email already exists"});
-
-        bcrypt.genSalt(8, (err, salt) => {
-            if(err) return res.status(500).json({error : "internal error at data processing"}); 
-
-            bcrypt.hash(password, salt, (err, hash) => {
-                if(err) return res.status(500).json({error : "internal error at data processing"}); 
-
-                const newUser = {
-                    name,
-                    cpf,
-                    email,
-                    password: hash,
-                    biography
-                }
-
-                User.create(newUser).then(user => {
-                    const token = createToken({id : user.id});
-                    return res.status(200).json({user, token});
-
-                }).catch(err => {
-                    return res.status(500).json({error : "failure to create user!"});
+        bcrypt.compare(password, user.password, (error, right) => {
+            if(error) return res.status(500).json({error: "Internal error"});
+            if(right){
+                const token = jwt.sign({id : user.id}, JWT_KEY, { 
+                    expiresIn: JWT_EXPIRES
                 });
-            });
+                user.password = undefined;
+                return res.status(200).json({ user, token});
+            }else{
+                return res.status(400).json({error : "incorrect email or password"});
+            }
         });
+
+        
+    },
+
+    async all (req, res) {
+        const users = await User.find();
+        if (users.length === 0) return res.status(204).json({});
+
+        return res.status(200).json(users);
     }
+
 }
