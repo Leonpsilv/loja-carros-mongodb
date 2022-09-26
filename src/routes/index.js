@@ -7,10 +7,17 @@ router.get('/', (req, res) => {
     res.send('Hello World');
 });
 
-router.post('/cadastrar', publicController.store);
+router.post('/login', publicController.login);
+router.get('/usuarios', publicController.all);
+
+
 
 // With login
 const user = require('./user');
 router.use('/user', user);
+
+// Admin routes
+const admin = require('./admin');
+router.use('/admin', admin);
 
 module.exports = router;
