@@ -1,13 +1,14 @@
 {
   "name": "loja-carros-mongodb",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "I take the test from luby to trainee js development and I changed the ORM and DB: sequelize (postgresql) to mongoose (mongodb)",
+  "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" : "nodemon src/app.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Leonardo Pinheiro da Silva",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
