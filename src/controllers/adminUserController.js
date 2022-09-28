@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 module.exports = {
     async storeUser (req, res) {
         if (!req.body) return res.status(400).json({ error : "Failure to get body"});
-        const { name, email, cpf, password, biography, admin } = req.body;
+        const { name, email, cpf, password, biography } = req.body;
 
         let problems = [];
 
@@ -24,6 +24,9 @@ module.exports = {
         }
         if(!cpf ||cpf.length < 11) {
             problems.push({problem : 'invalid cpf!'});
+        }
+        if(biography.length > 200) {
+            problems.push({problem : 'biography too large'});
         }
 
         if (problems.length != 0) return res.status(400).json(problems);
@@ -88,12 +91,51 @@ module.exports = {
             const admins = [];
             for (let index = 0; index < adminList.length; index++) {
                 const id = adminList[index];
-                admins.push(await User.findOne({_id: id.user_id}));
+                if(id){
+                    admins.push(await User.findOne({_id: id.user_id}));
+                }
             }
 
             return res.status(200).json(admins);
         }catch(e){
             return res.status(500).json({error : "Failure to get data"});
         }
+    },
+
+    async one (req, res) {
+        
+    },
+
+    async deleteUserAndAdmin (req, res) {
+        if(!req.userId) return res.status(401).json({error : "User not authenticate"});
+
+        const { userCpf, password } = req.body;
+        if(!userCpf || !password) return res.status(400).json({error : "All the fields must be fulled"});
+
+        const user = await User.findOne({cpf : userCpf}).select('+password');
+        if(!user || user === null || user === undefined) return res.status(400).json({error : "user not found"});
+
+        bcrypt.compare(password, user.password, async (error, right) => {
+            if(error) return res.status(500).json({error: "Internal error"});
+            if(right){
+                const id = user.id;
+                Admin.findOne({user_id : id}).then(admin => {
+                    if(admin){
+                        admin.destroy().catch(err => {
+                            return res.status(500).json({error : "Failure to delete admin user"});
+                        });
+                    }
+                }).catch(e => {
+                    return res.status(500).json({error : "Failure to verify user data"});
+                });
+
+                await user.destroy().then(() => {
+                    return res.status(204).json({text : "user deleted!"});
+                }).catch(err => {
+                    return res.status(500).json({error : "Failure to delete user"});
+                });
+            }
+                return res.status(400).json({error : "incorrect password"});
+        });
     }
 }
