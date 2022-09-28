@@ -108,20 +108,24 @@ module.exports = {
 
     async deleteUserAndAdmin (req, res) {
         if(!req.userId) return res.status(401).json({error : "User not authenticate"});
+        const id = req.userId;
 
         const { userCpf, password } = req.body;
         if(!userCpf || !password) return res.status(400).json({error : "All the fields must be fulled"});
 
+        const userAdmin = await User.findById(id).select('+password');
+        if(!userAdmin || userAdmin === null || userAdmin === undefined) return res.status(400).json({error : "Failure to get logged user"});
+
         const user = await User.findOne({cpf : userCpf}).select('+password');
         if(!user || user === null || user === undefined) return res.status(400).json({error : "user not found"});
 
-        bcrypt.compare(password, user.password, async (error, right) => {
-            if(error) return res.status(500).json({error: "Internal error"});
+        bcrypt.compare(password, userAdmin.password, async (error, right) => {
+            if(error) return res.status(500).json(error + {error: "Internal error"});
             if(right){
                 const id = user.id;
                 Admin.findOne({user_id : id}).then(admin => {
                     if(admin){
-                        admin.destroy().catch(err => {
+                        admin.deleteOne().catch(err => {
                             return res.status(500).json({error : "Failure to delete admin user"});
                         });
                     }
@@ -129,8 +133,8 @@ module.exports = {
                     return res.status(500).json({error : "Failure to verify user data"});
                 });
 
-                await user.destroy().then(() => {
-                    return res.status(204).json({text : "user deleted!"});
+                await user.deleteOne().then(() => {
+                    return res.status(200).json({text : "user deleted!"});
                 }).catch(err => {
                     return res.status(500).json({error : "Failure to delete user"});
                 });
