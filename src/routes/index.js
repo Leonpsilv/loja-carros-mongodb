@@ -14,7 +14,7 @@ router.get('/usuarios', publicController.all);
 
 // With login
 const user = require('./user');
-router.use('/user', user);
+router.use('/usuario', user);
 
 // Admin routes
 const admin = require('./admin');
