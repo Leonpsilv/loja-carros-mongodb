@@ -83,7 +83,7 @@ module.exports = {
         });
     },
 
-    async all (req, res) {
+    async allAdmins (req, res) {
         try{
             const adminList = await Admin.find();
             if (adminList.length === 0) return res.status(204).json({});
@@ -102,8 +102,11 @@ module.exports = {
         }
     },
 
-    async one (req, res) {
-        
+    async allUsers (req, res) {
+        const users = await User.find();
+        if (users.length === 0) return res.status(204).json({});
+
+        return res.status(200).json(users);
     },
 
     async deleteUserAndAdmin (req, res) {
