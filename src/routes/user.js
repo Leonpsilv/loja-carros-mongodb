@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/loggedUserController');
-const { loginValidate } = require('../middlewares/auth');
+
 
 router.get('/', (req, res) => {
     res.send('Hello user');
 });
 
-router.put('/editar',loginValidate ,userController.edit);
+router.put('/editar', userController.edit); // edit user
+router.get('/minha-conta', userController.one); // logged user
 
 module.exports = router;

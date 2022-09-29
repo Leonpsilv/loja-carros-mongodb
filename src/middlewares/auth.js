@@ -1,3 +1,4 @@
+const { response } = require('express');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 require('../models/userSchema');
@@ -38,26 +39,15 @@ module.exports = {
 
     async adminValidate (req, res, next) {
         try{
-            if(!JWT_KEY) return res.status(500).json({error : "Key jwt not declared"});
-            if(!req || !req.headers) return res.status(401).json({error : 'Access token not defined'});
+            if (!req.userId) return res.status(401).json({error : "User not authenticate"});
+            const user_id = req.userId;
+            
+            Admin.findOne({user_id}).then(admin => {
+                if(!admin || admin === null || admin === undefined) return res.status(400).json({error : "User is not admin"});
+                next();
 
-            const authorization = req.headers.authorization;
-            if(!authorization || authorization < 8) return res.status(401).json({error : 'access token not defined'});
-
-            const token = authorization.substring(7);
-            jwt.verify(token, JWT_KEY, function(err, decoded) { 
-                if (err) return res.status(500).json({ error : 'Invalid Token' }); 
-                
-                const id = decoded.id;
-                Admin.findOne({user_id : id}).then(admin => {
-                    if(!admin || admin === null || admin === undefined) return res.status(401).json({error : 'token with invalid data!'}); 
-                    
-                    req.userId = admin.user_id;
-                    next(); 
-
-                }).catch(err => {
-                    return res.status(400).json({error : "Failure to verify token data"});
-                });
+            }).catch(err => {
+                return res.status(500).json({error : "Failure to find user"});
             });
 
         }catch(e){
