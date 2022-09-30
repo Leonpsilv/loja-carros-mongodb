@@ -68,5 +68,9 @@ module.exports = {
     async one (req, res) {
         if (!req.userId) return res.status(401).json({error : "User not authenticate"});
         
+    },
+
+    async avatar (req, res) {
+        
     }
 }
