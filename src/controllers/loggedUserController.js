@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 require('../models/userSchema');
+require('../models/avatarSchema');
 const User = mongoose.model('users');
+const Avatar = mongoose.model('avatars');
 const bcrypt = require('bcrypt');
 
 module.exports = {
@@ -71,6 +73,37 @@ module.exports = {
     },
 
     async avatar (req, res) {
+        const user_id = req.userId;
+        if (!user_id) return res.status(401).json({error : "User not authenticate"});
+
+        const {originalname : name, size, key, location} = req.file; 
+        if(!name || !size || !key) return res.status(400).json({error : "File without data"});
+
         
+        const newAvatar = {
+            user_id,
+            name,
+            size,
+            key,
+            location
+        }
+
+        if(!location) {
+            newAvatar.location = `${process.env.APP_URL}/src/tmp/upload/${key}`;
+        }
+
+        const user = await User.findById(user_id);
+        if(!user || user === null) return res.status(400).json({error : "User not found"});
+
+        const avatar = await Avatar.findOne({user_id});
+        if(avatar && avatar !== null) return res.status(400).json({error: "User have an avatar"});
+        
+        Avatar.create(newAvatar).then(avatar => {
+            avatar.key = undefined;
+            return res.status(201).json(avatar);
+
+        }).catch(err => {
+            return res.status(500).json({error : "failure to save avatar!" + err});
+        });
     }
 }
