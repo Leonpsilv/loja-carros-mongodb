@@ -69,7 +69,15 @@ module.exports = {
 
     async one (req, res) {
         if (!req.userId) return res.status(401).json({error : "User not authenticate"});
-        
+        const id = req.userId;
+
+        const user = await User.findById(id);
+        if(!user || user === null) return res.status(400).json({error : "User not found"});
+
+        const avatar = await Avatar.findOne({user_id : id});
+        avatar.key = undefined;
+
+        return res.status(200).json({user, avatar});
     },
 
     async avatar (req, res) {
