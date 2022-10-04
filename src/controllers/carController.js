@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 require('../models/carSchema');
-const Car = mongoose.mondel('cars');
+const Car = mongoose.model('cars');
+
+require('../models/userSchema');
+const User = mongoose.model('users');
+
 // marca, modelo, ano, km, cor, chassi e preço de compra
 
 module.exports = {
@@ -38,15 +42,17 @@ module.exports = {
         if(!req.params.chassis) return res.status(400).json({error: "No car informed"});
 
         let problems = [];
-        const { model, color } = req.body;
+        const { model, color, km } = req.body;
 
-        if (!model || model.length < 2) { problems.push({problem: "invalid model!"}); }
-        if (!color || color.length < 2) { problems.push({problem: "invalid color!"}); }
+        if (!model || model.length < 2) { problems.push({problem: "model not informed"}); }
+        if (!color || color.length < 2) { problems.push({problem: "color not informed"}); }
 
         if(problems.length !== 0) return res.status(400).json(problems);
 
-        const car = await Car.findOne({chassis: [req.params.chassis]});
+        const car = await Car.findOne({chassis: [req.params.chassis.toString()]});
         if(!car || car === null) return res.status(400).json({error : "Car not found!"});
+        if (parseInt(km) < parseInt(car.km)) return res.status(400).json({error : "km informed is less than the original"});
+        if(km) { car.km = km }
 
         car.model =  model;
         car.color = color;
@@ -61,7 +67,9 @@ module.exports = {
     async delete (req, res) {
         if(!req.params.chassis) return res.status(400).json({error: "No car informed"});
 
-        Car.findOne({chassis: [req.params.chassis]}).then(car => {
+        const chassis = req.params.chassis.toString();
+
+        Car.findOne({chassis}).then(car => {
             if(!car || car === null) return res.status(400).json({error : "Car not found!"});
 
             car.deleteOne().then(() => {
@@ -69,6 +77,64 @@ module.exports = {
             }).catch(err => {
                 return res.status(500).json({error : "Failure to delete car!"});
             });
+        }).catch(err => {
+            return res.status(500).json({error : "Failure to search car"});
+        });
+    },
+
+    async all (req, res) {
+        Car.find().then(cars => {
+            if(!cars) return res.status(204).json();
+
+            if (req.userId) {
+                User.findOne({id : [req.userId]}).then(user => {
+                    if (!user) return res.status(401).json({error : "invalid user!"});
+                }).catch(err => {
+                    return res.status(500).json({error : "Failure to verify user"});
+                });
+            }
+            if (!req.userId){
+                let carsPublic = [];
+                cars.forEach(car => {
+                    car.buy_price = undefined;
+                    car.chassis = undefined;
+
+                    carsPublic.push(car);
+                });
+
+                return res.status(200).json(carsPublic);
+            } 
+            
+            return res.status(200).json(cars);
+        }).catch(err => {
+            return res.status(500).json({error : "Failure to search cars"});
+        });
+
+
+    },
+
+    async one (req, res) {
+        if(!req.params.chassis) return res.status(400).json({error : "No car informed"});
+
+        const chassis = req.params.chassis.toString();
+
+        if (req.userId) {
+            User.findOne({id : [req.userId]}).then(user => {
+                if (!user) return res.status(401).json({error : "invalid user!"});
+            }).catch(err => {
+                return res.status(500).json({error : "Failure to verify user"});
+            });
+        }
+        Car.findOne({chassis}).then(car => {
+            if(!car) return res.status(400).json({error : "Car not found"});
+            if (!req.userId){
+                car.buy_price = undefined;
+                car.chassis = undefined;
+                
+                return res.status(200).json(car);
+            } 
+            
+            return res.status(200).json(car);
         }).catch(err => {
             return res.status(500).json({error : "Failure to search car"});
         });
