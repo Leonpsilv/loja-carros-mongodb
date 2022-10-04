@@ -14,7 +14,7 @@ const Car = new Schema ({
         lowercase : true
     },
     chassis : {
-        type : Number,
+        type : String,
         required: true,
         unique : true
     },
