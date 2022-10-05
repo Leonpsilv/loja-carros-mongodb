@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 require('../models/userSchema');
 require('../models/adminSchema');
+require('../models/sellSchema');
 
 const User = mongoose.model('users');
 const Admin = mongoose.model('admins');
+const Sell = mongoose.model('sales');
 const bcrypt = require('bcrypt');
 
 module.exports = {
@@ -144,5 +146,26 @@ module.exports = {
             }
                 return res.status(400).json({error : "incorrect password"});
         });
+    },
+
+    async sales (req, res) {
+        const sales = await Sell.find();
+        const users = await User.find();
+
+        if(!sales) return res.status(204).json();
+        const allData = [];
+
+        users.forEach(user => {
+            const dataSales = [];
+            sales.forEach(sell => {
+                if(sell.user_id === user.id){
+                    dataSales.push(sell);
+                }
+            });
+
+            allData.push([user, dataSales]);
+        });
+
+        return res.status(200).json(allData);
     }
 }
