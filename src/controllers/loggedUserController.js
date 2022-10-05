@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 require('../models/userSchema');
 require('../models/avatarSchema');
+require('../models/sellSchema');
+const Sell = mongoose.model('sales');
 const User = mongoose.model('users');
 const Avatar = mongoose.model('avatars');
 const bcrypt = require('bcrypt');
@@ -77,7 +79,9 @@ module.exports = {
         const avatar = await Avatar.findOne({user_id : id});
         avatar.key = undefined;
 
-        return res.status(200).json({user, avatar});
+        const sales = await Sell.find({user_id : id});
+
+        return res.status(200).json({user, avatar, sales});
     },
 
     async avatar (req, res) {
@@ -113,5 +117,5 @@ module.exports = {
         }).catch(err => {
             return res.status(500).json({error : "failure to save avatar!" + err});
         });
-    }
+    },
 }
