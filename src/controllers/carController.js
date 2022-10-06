@@ -5,6 +5,9 @@ const Car = mongoose.model('cars');
 require('../models/userSchema');
 const User = mongoose.model('users');
 
+require('../models/sellSchema');
+const Sell = mongoose.model('sales');
+
 // marca, modelo, ano, km, cor, chassi e preço de compra
 
 module.exports = {
@@ -138,5 +141,50 @@ module.exports = {
         }).catch(err => {
             return res.status(500).json({error : "Failure to search car"});
         });
+    },
+
+    async filter (req, res) {
+        const { filter } = req.body.toLowerCase();
+
+        if (filter === 'disponiveis') {
+            Car.find().then(async cars => {
+                const sales = await Sell.find();
+                if (!sales) return res.status(200).json(cars);
+
+                const carSold = [];
+                sales.forEach(sell => {
+                    carSold.push(sell.car_chassis);
+                });
+                const availableCars = [];
+                cars.forEach(car => {
+                    if (carSold.indexOf(car.chassis) === -1) {
+                        availableCars.push(car);
+                    }
+                });
+
+                return res.status(200).json(availableCars);
+            }).catch(err => {
+                return res.status(500).json({error :  "Failure to search cars"});
+            });
+        }
+
+        if (filter === 'reservados') {
+            Sell.find({reserved : true, sold : false}).then(sales => {
+
+            }).catch(err => {
+                return res.status(500).json({error :  "Failure to search cars"});
+            });
+        }
+
+        if (filter === 'vendidos') {
+            Sell.find({sold : true}).then(sales => {
+                
+            }).catch(err => {
+                return res.status(500).json({error :  "Failure to search cars"});
+            });
+        }
+
+        return res.status(400).json({error : "Select an valid category"});
+
     }
 }
