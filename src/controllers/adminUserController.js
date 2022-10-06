@@ -56,7 +56,7 @@ module.exports = {
                     return res.status(200).json({user});
 
                 }).catch(err => {
-                    return res.status(500).json({error : "failure to create user!" + err});
+                    return res.status(500).json({error : "failure to create user!"});
                 });
             });
         });
@@ -105,10 +105,24 @@ module.exports = {
     },
 
     async allUsers (req, res) {
-        const users = await User.find();
-        if (users.length === 0) return res.status(204).json({});
+        const page = parseInt(req.query['page']);
+        const max = parseInt(req.query['max']);
+        let skip = 0;
+        
 
+        if(!page && !max){
+            const users = await User.find();
+            if (!users || users.length === 0) return res.status(204).json({});
+            return res.status(200).json(users);
+        }
+        
+        for (let index = 0; index < page; index++) {
+            skip += max;
+        }
+        const users = await User.find().skip(skip).limit(max);
+        if (!users || users.length === 0) return res.status(204).json({});
         return res.status(200).json(users);
+
     },
 
     async deleteUserAndAdmin (req, res) {
