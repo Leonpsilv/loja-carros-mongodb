@@ -2,6 +2,8 @@ const express = require('express');
 require('dotenv').config();
 const app = express();
 const mongoose = require('mongoose');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocs = require('./swagger.json');
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -14,6 +16,9 @@ mongoose.connect(process.env.DB_CONNECT, {
 }).catch(err => {
     console.error('Failure to connect to DB');
 });
+
+// Swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 
 // Routes
