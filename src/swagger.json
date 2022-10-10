@@ -18,8 +18,139 @@
         "/carros" : {
             "get" : {
                 "sumary" : "Visualizar carros",
-                "description" : "Rota responsável por mostrar os carros cadastrados no sistema",
-                "tags" : ["Carros"]
+                "description" : "Rota pública responsável por mostrar os carros cadastrados no sistema",
+                "tags" : ["Carros"],
+                "responses": {
+                    "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "array",
+                                    "items" : {
+                                        "$ref" : "#/components/schemas/Carro"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204" : {
+                        "description" : "No Content"
+                    },
+                    "500" : {
+                        "description" : "Internal Error"
+                    }
+                }
+            }
+        },
+
+        "/carros/{chassis}" : {
+            "get" : {
+                "sumary" : "Visualizar carro específico",
+                "description" : "Rota responsável por mostrar as informações de um carro especificado nas params",
+                "tags" : ["Carros"],
+                "parameters" : [
+                    {
+                        "name" : "chassis",
+                        "in" : "path",
+                        "description" : "Chassi do carro para buscá-lo no sistema",
+                        "required" : true
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/Carro"
+                                }
+                            }
+                        }
+                    },
+                    "204" : {
+                        "description" : "No Content"
+                    },
+                    "500" : {
+                        "description" : "Internal Error"
+                    },
+                    "400" : {
+                        "description" : "Bad Request"
+                    }
+                }
+            }
+        },
+
+        "/usuario/carros" : {
+            "get" : {
+                "sumary" : "Visualizar carros",
+                "description" : "Rota responsável por mostrar os carros cadastrados no sistema, com dados internos",
+                "tags" : ["Carros"],
+                "security" : [{"bearerAuth" : []}],
+                "responses": {
+                    "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "array",
+                                    "items" : {
+                                        "$ref" : "#/components/schemas/Carro"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204" : {
+                        "description" : "No Content"
+                    },
+                    "401" : {
+                        "description" : "Unauthorized"
+                    },
+                    "500" : {
+                        "description" : "Internal Error"
+                    }
+                }
+            }
+        },
+
+        "/usuario/carros/{chassis}" : {
+            "get" : {
+                "sumary" : "Visualizar carro específico",
+                "description" : "Rota responsável por mostrar as informações de um carro especificado nas params",
+                "tags" : ["Carros"],
+                "security" : [{"bearerAuth" : []}],
+                "parameters" : [
+                    {
+                        "name" : "chassis",
+                        "in" : "path",
+                        "description" : "Chassi do carro para buscá-lo no sistema",
+                        "required" : true
+                    }
+                ],
+                "responses" : {
+                    "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/Carro"
+                                }
+                            }
+                        }
+                    },
+                    "500" : {
+                        "description" : "Internal Error"
+                    },
+                    "400" : {
+                        "description" : "Bad Request"
+                    },
+                    "401" : {
+                        "description" : "Unauthorized"
+                    }
+                }
             }
         },
 
@@ -93,6 +224,32 @@
                         "type" : "string"
                     },
                     "password" : {
+                        "type" : "string"
+                    }
+                }
+            },
+            "Carro" : {
+                "type" : "object",
+                "properties" : {
+                    "brand" : {
+                        "type" : "string"
+                    },
+                    "model" : {
+                        "type" : "string"
+                    },
+                    "chassis" : {
+                        "type" : "string"
+                    },
+                    "year" : {
+                        "type" : "string"
+                    },
+                    "km" : {
+                        "type" : "string"
+                    },
+                    "color" : {
+                        "type" : "string"
+                    },
+                    "buy_price" : {
                         "type" : "string"
                     }
                 }
