@@ -47,7 +47,7 @@
         "/carros/{chassis}" : {
             "get" : {
                 "sumary" : "Visualizar carro específico",
-                "description" : "Rota responsável por mostrar as informações de um carro especificado nas params",
+                "description" : "Rota pública responsável por mostrar as informações de um carro especificado nas params",
                 "tags" : ["Carros"],
                 "parameters" : [
                     {
@@ -154,6 +154,174 @@
             }
         },
 
+        "/usuario/editar" : {
+            "put" : {
+                "sumary" : "Editar usuário",
+                "description" : "Rota na qual o usuário logado pode modificar alguns dados da sua conta",
+                "tags" : ["Usuario"],
+                "security" : [{"bearerAuth" : []}],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "$ref" : "#/components/schemas/Usuario"
+                            },
+                            "examples" : {
+                                "usuario" : {
+                                    "value" : {
+                                        "name" : "Joao Editado",
+                                        "biography" : "Olá! tenho 22 anos e sou dev backend"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "401" : {
+                       "description" : "Unauthorized"
+                    },
+                    "400" : {
+                        "description" : "Bad Request"
+                     },
+                     "500" : {
+                        "description" : "Internal Error"
+                     },
+                     "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/Usuario"
+                                }
+                            }
+                        }
+                     }
+                } 
+            }
+        },
+
+        "/usuario/minha-conta" : {
+            "get" : {
+                "sumary" : "Visualizar usuário",
+                "description" : "Rota na qual o usuário logado pode acessar os dados da sua conta",
+                "tags" : ["Usuario"],
+                "security" : [{"bearerAuth" : []}],
+                "responses" : {
+                    "401" : {
+                       "description" : "Unauthorized"
+                    },
+                    "400" : {
+                        "description" : "Bad Request"
+                     },
+                     "500" : {
+                        "description" : "Internal Error"
+                     },
+                     "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/Usuario"
+                                }
+                            }
+                        }
+                     }
+                } 
+            }
+        },
+        
+        "/usuario/minhas-vendas" : {
+            "get" : {
+                "sumary" : "Visualizar vendas do usuário",
+                "description" : "Rota na qual o usuário logado pode acessar os registros de suas vendas",
+                "tags" : ["Usuario"],
+                "security" : [{"bearerAuth" : []}],
+                "responses" : {
+                    "401" : {
+                       "description" : "Unauthorized"
+                    },
+                    "400" : {
+                        "description" : "Bad Request"
+                     },
+                     "500" : {
+                        "description" : "Internal Error"
+                     },
+                     "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/Usuario"
+                                }
+                            }
+                        }
+                     }
+                } 
+            }
+        },
+
+        "/usuario/vender/{chassis}" : {
+            "post" : {
+                "sumary" : "Realizar uma venda",
+                "description" : "Rota na qual o usuário pode registrar uma venda",
+                "tags" : ["Usuario"],
+                "security" : [{"bearerAuth" : []}],
+                "parameters" : [
+                    {
+                        "name" : "chassis",
+                        "in" : "path",
+                        "description" : "Chassi do carro para buscá-lo no sistema",
+                        "required" : true
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "$ref" : "#/components/schemas/Venda"
+                            },
+                            "examples" : {
+                                "usuario" : {
+                                    "value" : {
+                                        "sold" : false,
+                                        "reserved" : true,
+                                        "sell_price" : "",
+                                        "client_cpf" : "98765431011"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "401" : {
+                       "description" : "Unauthorized"
+                    },
+                    "400" : {
+                        "description" : "Bad Request"
+                     },
+                     "500" : {
+                        "description" : "Internal Error"
+                     },
+                     "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/Usuario"
+                                }
+                            }
+                        }
+                     }
+                } 
+            }
+        },
+
         "/admin/cadastrar" : {
             "post" : {
                 "sumary" : "Cadastrar novos usuários",
@@ -250,6 +418,28 @@
                         "type" : "string"
                     },
                     "buy_price" : {
+                        "type" : "string"
+                    }
+                }
+            },
+            "Venda" : {
+                "properties" : {
+                    "user_id" : {
+                        "type" : "string"
+                    },
+                    "car_chassis" : {
+                        "type" : "string"
+                    },
+                    "sold" : {
+                        "type" : "boolean"
+                    },
+                    "reserved" : {
+                        "type" : "boolean"
+                    },
+                    "sell_price" : {
+                        "type" : "string"
+                    },
+                    "client_cpf" : {
                         "type" : "string"
                     }
                 }
