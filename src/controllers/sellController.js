@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 require('../models/sellSchema');
 require('../models/carSchema');
+require('../models/userSchema');
 const Sell = mongoose.model('sales');
 const Car = mongoose.model('cars');
+const User = mongoose.model('users');
 
 module.exports = {
     async store (req, res) {
@@ -45,5 +47,22 @@ module.exports = {
         }).catch(err => {
             return res.status(500).json({error : "Failure to save sell"});
         });
+    },
+
+    async userSales (req, res) {
+        if (!req.userId) return res.status(401).json({error : "User not authenticate"});
+        const id = req.userId;
+
+        const user = await User.findById(id);
+        if(!user || user === null) return res.status(400).json({error : "User not found"});
+
+        Sell.find({user_id: id}).then(sales => {
+            if(!sales) return res.status(204).json();
+            
+            return res.status(200).json(sales);
+        }).catch(err => {
+            return res.status(500).json({error : "Failure to get sales!"});
+        });
+        
     }
 }
