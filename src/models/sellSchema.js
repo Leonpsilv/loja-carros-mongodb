@@ -19,8 +19,7 @@ const Sell = new Schema({
         required : true
     },
     sell_price : {
-        type : String,
-        required: true
+        type : String
     },
     client_cpf : {
         type : String,
