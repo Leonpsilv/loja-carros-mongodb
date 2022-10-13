@@ -112,7 +112,7 @@ module.exports = {
         
         Avatar.create(newAvatar).then(avatar => {
             avatar.key = undefined;
-            return res.status(201).json(avatar);
+            return res.status(200).json(avatar);
 
         }).catch(err => {
             return res.status(500).json({error : "failure to save avatar!" + err});
