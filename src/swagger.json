@@ -202,6 +202,52 @@
             }
         },
 
+        "/usuario/avatar" : {
+            "post": {
+                "sumary" : "Avatar do usuário",
+                "description" : "Rota na qual o usuário logado pode adicionar um avatar para a sua conta",
+                "tags" : ["Usuario"],
+                "security" : [{"bearerAuth" : []}],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema":{
+                                "type": "object",
+                                "properties":{
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401" : {
+                        "description" : "Unauthorized"
+                     },
+                     "400" : {
+                         "description" : "Bad Request"
+                      },
+                      "500" : {
+                         "description" : "Internal Error"
+                      },
+                      "200" : {
+                         "description" : "OK",
+                         "content" : {
+                             "application/json" : {
+                                 "schema" : {
+                                     "type" : "object",
+                                     "$ref" : "#/components/schemas/Avatar"
+                                 }
+                             }
+                         }
+                      }
+                }
+            }
+        },
+
         "/usuario/minha-conta" : {
             "get" : {
                 "sumary" : "Visualizar usuário",
@@ -268,7 +314,7 @@
             "post" : {
                 "sumary" : "Realizar uma venda",
                 "description" : "Rota na qual o usuário pode registrar uma venda",
-                "tags" : ["Usuario"],
+                "tags" : ["Vendas"],
                 "security" : [{"bearerAuth" : []}],
                 "parameters" : [
                     {
@@ -324,7 +370,7 @@
             "put" : {
                 "sumary" : "Realizar uma venda em um carro reservado",
                 "description" : "Rota na qual o usuário pode registrar uma venda através de uma reserva feita anteriormente",
-                "tags" : ["Usuario"],
+                "tags" : ["Vendas"],
                 "security" : [{"bearerAuth" : []}],
                 "parameters" : [
                     {
@@ -495,6 +541,15 @@
                     },
                     "client_cpf" : {
                         "type" : "string"
+                    }
+                }
+            },
+            "Avatar" : {
+                "type": "object",
+                "properties":{
+                    "file": {
+                        "type": "string",
+                        "format": "binary"
                     }
                 }
             }
