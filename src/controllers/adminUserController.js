@@ -74,12 +74,12 @@ module.exports = {
         if(!user.id || user.id.length < 1) return res.status(400).json({error : "invalid user"});
 
         const admin = await Admin.findOne({user_id : user.id});
-        if(admin.length !== 0) return res.status(400).json({error : "This user is already an admin"});
+        if(admin) return res.status(400).json({error : "This user is already an admin"});
         const newAdmin = {
             user_id : user.id
         }
         Admin.create(newAdmin).then((adm) => {
-            return res.status(201).json({text : `User ${user.name} add to admin list!   - ${adm}`});
+            return res.status(201).json({text : `User ${user.name} add to admin list!`});
         }).catch(e => {
             return res.status(500).json({error : "Failure to add user to admin list"});
         });
