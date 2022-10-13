@@ -471,6 +471,228 @@
                      }
                 } 
             }
+        },
+        
+        "/admin/cadastrar/admin" : {
+            "post" : {
+                "sumary" : "Cadastrar novos usuários",
+                "description" : "Rota na qual o usuário administrador pode cadastrar novos usuários no sistema. Obs: o cpf e o email devem ser únicos",
+                "tags" : ["Admin"],
+                "security" : [{"bearerAuth" : []}],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "$ref" : "#/components/schemas/Admin"
+                            },
+                            "examples" : {
+                                "usuario" : {
+                                    "value" : {
+                                        "cpf" : "78945612301"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "401" : {
+                       "description" : "Unauthorized"
+                    },
+                    "400" : {
+                        "description" : "Bad Request"
+                     },
+                     "500" : {
+                        "description" : "Internal Error"
+                     },
+                     "201" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/Admin"
+                                }
+                            }
+                        }
+                     }
+                } 
+            }
+        },
+        
+        "/admin/administradores" : {
+            "get" : {
+                "sumary" : "Visualizar administradores",
+                "description" : "Rota responsável por listar os usuários administradores do sistema",
+                "tags" : ["Admin"],
+                "security" : [{"bearerAuth" : []}],
+                "responses": {
+                    "401" : {
+                        "description" : "Unauthorized"
+                     },
+                    "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "array",
+                                    "items" : {
+                                        "$ref" : "#/components/schemas/Usuario"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204" : {
+                        "description" : "No Content"
+                    },
+                    "500" : {
+                        "description" : "Internal Error"
+                    }
+                }
+            }
+        },
+
+        "/admin/usuarios" : {
+            "get" : {
+                "sumary" : "Visualizar usuários",
+                "description" : "Rota responsável por listar todos os usuários do sistema",
+                "tags" : ["Admin"],
+                "security" : [{"bearerAuth" : []}],
+                "responses": {
+                    "401" : {
+                        "description" : "Unauthorized"
+                     },
+                    "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "array",
+                                    "items" : {
+                                        "$ref" : "#/components/schemas/Usuario"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204" : {
+                        "description" : "No Content"
+                    },
+                    "500" : {
+                        "description" : "Internal Error"
+                    }
+                }
+            }
+        },
+
+        "/admin/carros/cadastrar" : {
+            "post" : {
+                "sumary" : "Cadastrar novos carros",
+                "description" : "Rota na qual o usuário administrador pode cadastrar novos carros no sistema.",
+                "tags" : ["Admin"],
+                "security" : [{"bearerAuth" : []}],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "$ref" : "#/components/schemas/Carro"
+                            },
+                            "examples" : {
+                                "usuario" : {
+                                    "value" : {
+                                        "brand" : "Aston Martin",
+                                        "model" : "Grã turismo",
+                                        "chassis" : "007",
+                                        "year" : "1963",
+                                        "km" : "007",
+                                        "color" : "cinza",
+                                        "buy_price" : "9999999"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "401" : {
+                       "description" : "Unauthorized"
+                    },
+                    "400" : {
+                        "description" : "Bad Request"
+                     },
+                     "500" : {
+                        "description" : "Internal Error"
+                     },
+                     "201" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/Carro"
+                                }
+                            }
+                        }
+                     }
+                } 
+            }
+        },
+
+        "/admin/carros/editar/{chassis}" : {
+            "put" : {
+                "sumary" : "Editar carro",
+                "description" : "Rota na qual o usuário administrador pode alterar os dados de um carro cadastrado no sistema",
+                "tags" : ["Admin"],
+                "security" : [{"bearerAuth" : []}],
+                "parameters" : [
+                    {
+                        "name" : "chassis",
+                        "in" : "path",
+                        "description" : "Chassi do carro para buscá-lo no sistema",
+                        "required" : true
+                    }
+                ],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "$ref" : "#/components/schemas/Carro"
+                            },
+                            "examples" : {
+                                "usuario" : {
+                                    "value" : {
+                                        "model" : "Grã turismo - luxo",
+                                        "color" : "prata metálico"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "401" : {
+                       "description" : "Unauthorized"
+                    },
+                    "400" : {
+                        "description" : "Bad Request"
+                     },
+                     "500" : {
+                        "description" : "Internal Error"
+                     },
+                     "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "object",
+                                    "$ref" : "#/components/schemas/Carro"
+                                }
+                            }
+                        }
+                     }
+                } 
+            }
         }
     },
 
@@ -492,6 +714,14 @@
                         "type" : "string"
                     },
                     "password" : {
+                        "type" : "string"
+                    }
+                }
+            },
+            "Admin" : {
+                "type" : "object",
+                "properties" : {
+                    "user_id" : {
                         "type" : "string"
                     }
                 }
@@ -523,6 +753,7 @@
                 }
             },
             "Venda" : {
+                "type" : "object",
                 "properties" : {
                     "user_id" : {
                         "type" : "string"
