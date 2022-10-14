@@ -693,6 +693,93 @@
                      }
                 } 
             }
+        },
+
+        "/admin/deletar/usuario" : {
+            "delete" : {
+                "sumary" : "Deletar um usuário",
+                "description" : "Rota na qual o usuário administrador pode deletar um usuário do sistema. Obs: o admin deverá preencher com a sua senha e com o cpf do usuário que deseja apagar",
+                "tags" : ["Admin"],
+                "security" : [{"bearerAuth" : []}],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type" : "object",
+                                "properties" : {
+                                    "userCpf" : "string",
+                                    "password" : "string"
+                                }
+                            },
+                            "examples" : {
+                                "data" : {
+                                    "value" : {
+                                        "userCpf" : "78945612301",
+                                        "password" : ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "401" : {
+                       "description" : "Unauthorized"
+                    },
+                    "400" : {
+                        "description" : "Bad Request"
+                     },
+                     "500" : {
+                        "description" : "Internal Error"
+                     },
+                     "200" : {
+                        "description" : "OK",
+                        "content" : {
+                            "application/json" : {
+                                "schema" : {
+                                    "type" : "object",
+                                    "properties" : {
+                                        "text" : "user deleted!"
+                                    }
+                                }
+                            }
+                        }
+                     }
+                }
+            }
+        },
+
+        "/admin/carros/deletar/{chassis}" : {
+            "delete" : {
+                "delete" : {
+                    "sumary" : "Deletar um carro",
+                    "description" : "Rota na qual o usuário administrador pode deletar um usuário do sistema. Obs: o admin deverá preencher com a sua senha e com o cpf do usuário que deseja apagar",
+                    "tags" : ["Admin"],
+                    "security" : [{"bearerAuth" : []}],
+                    "parameters" : [
+                        {
+                            "name" : "chassis",
+                            "in" : "path",
+                            "description" : "Chassi do carro para buscá-lo no sistema",
+                            "required" : true
+                        }
+                    ],
+                    "responses" : {
+                        "401" : {
+                           "description" : "Unauthorized"
+                        },
+                        "400" : {
+                            "description" : "Bad Request"
+                         },
+                         "500" : {
+                            "description" : "Internal Error"
+                         },
+                         "204" : {
+                            "description" : "No Content"
+                         }
+                    }
+                }
+            }
         }
     },
 
